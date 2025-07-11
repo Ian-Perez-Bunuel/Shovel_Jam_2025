@@ -2,14 +2,12 @@
 #include "stdio.h"
 
 #include "../include/game.h"
+#include "../include/Globals.h"
 
 // Specific include for build_web
 #if defined(WEB_BUILD)
 #include <emscripten/emscripten.h>
 #endif
-
-const int screenWidth = 800;
-const int screenHeight = 600;
 
 void GameLoop(void);
 
@@ -18,7 +16,7 @@ Game game;
 int main(void)
 {
 
-    InitWindow(screenWidth, screenHeight, "Raylib StarterKit GPPI");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Raylib StarterKit GPPI");
 
     // Initialise Game
     game.init();
@@ -57,6 +55,7 @@ void GameLoop(void)
     ClearBackground(BLACK);
 
     // Draw the Game Objects
+    DrawFPS(0, 0);
     game.draw();
 
     counter++;
