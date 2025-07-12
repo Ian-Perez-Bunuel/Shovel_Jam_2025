@@ -21,10 +21,7 @@ void Pickup::spawn(Vector2 t_pos)
 
 void Pickup::update()
 {
-    if (checkCollision() && IsKeyPressed(KEY_E))
-    {
-        onPickup();
-    }
+
 }
 
 void Pickup::draw()
@@ -36,18 +33,8 @@ void Pickup::draw()
     }
 }
 
-bool Pickup::checkCollision()
+void Pickup::pickup()
 {
-    if (CheckCollisionCircles(position, PICKUP_RADIUS, player->getPos(), player->getRadius()))
-    {
-        return true;
-    }
-    return false;
-}
-
-void Pickup::onPickup()
-{
-    player->inventory.addItem(shared_from_this());
     active = false;
     inInventory = true;
 }

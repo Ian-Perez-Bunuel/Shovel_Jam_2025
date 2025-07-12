@@ -9,7 +9,7 @@
 class Player;
 class Cell;
 
-class Pickup : public GameObject, public std::enable_shared_from_this<Pickup> 
+class Pickup : public GameObject
 {
     friend Cell;
 public:
@@ -19,18 +19,13 @@ public:
     virtual void update() override;
     virtual void draw() override;
 
-    bool isActive() { return active; }
+    virtual void pickup();
+    static const float PICKUP_RADIUS;
 
 protected:
-    bool checkCollision();
-    virtual void onPickup();
-
-    Texture2D texture;
 
     bool inInventory = false;
     std::shared_ptr<Player> player;
-
-    static const float PICKUP_RADIUS;
 
 private:
 

@@ -1,22 +1,22 @@
 #include "../include/Inventory.h"
 
-const int Inventory::ROWS = 5;
+const int Inventory::ROWS = 1;
 const int Inventory::COLUMNS = 5;
-const int Inventory::SIDE_PADDING = 50;
-const int Inventory::TOP_PADDING = 200;
+const int Inventory::SIDE_PADDING = 150;
+const int Inventory::TOP_PADDING = 50;
 const int Inventory::SPACING = 15;
 
 
 void Inventory::init()
 {
     // Get grid
-    for (int row = 0; row < ROWS; row++)
+    for (int col = 0; col < COLUMNS; col++)
     {
-        float xPos = SIDE_PADDING + row * (Cell::getSize().x + SPACING);
+        float xPos = SIDE_PADDING + col * (Cell::getSize().x + SPACING);
 
-        for (int col = 0; col < COLUMNS; col++)
+        for (int row = 0; row < ROWS; row++)
         {
-            float yPos = TOP_PADDING + col * (Cell::getSize().y + SPACING);
+            float yPos = TOP_PADDING + row * (Cell::getSize().y + SPACING);
 
             Vector2 pos = {xPos, yPos};
             cells.push_back(std::make_shared<Cell>(pos));

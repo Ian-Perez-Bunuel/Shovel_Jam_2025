@@ -10,7 +10,7 @@ void Renderer::addSprite(const std::shared_ptr<Drawable> t_newSprite)
 void Renderer::drawAll()
 {
     // Make a little working copy
-    auto sorted = sprites;  // vector<shared_ptr<Drawable>>
+    auto sorted = sprites;
 
     std::sort(sorted.begin(), sorted.end(),
               [](auto const& a, auto const& b) {

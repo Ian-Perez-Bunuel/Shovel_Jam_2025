@@ -54,6 +54,7 @@ void Game::drawUI()
 void Game::update()
 {
     player->update();
+    player->checkForPickups(pickups);
 
     if (IsMouseButtonReleased(0))
     {
