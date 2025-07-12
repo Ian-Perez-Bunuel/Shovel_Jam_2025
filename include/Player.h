@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../include/GameObject.h"
+#include "../include/Inventory.h"
+
 
 class Player : public GameObject
 {
@@ -10,6 +12,10 @@ public:
     void draw() override;
     void update() override;
 
+    Inventory inventory;
+
 private:
+    void input();
+
     float speed = 2.0f;
 };

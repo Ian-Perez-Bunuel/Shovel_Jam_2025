@@ -40,3 +40,8 @@ void Pickup::update()
 
     position = Vector2Add(position, velocity);
 }
+
+void Pickup::onPickup()
+{
+    // player->inventory.addItem(this);
+}

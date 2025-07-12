@@ -5,14 +5,28 @@
 void Player::init(Vector2 t_pos, float t_radius)
 {
     GameObject::init(t_pos, t_radius, BLUE);
+
+    inventory.init();
 }
 
 void Player::draw()
 {
     GameObject::draw();
+
+    inventory.draw();
 }
 
 void Player::update()
+{
+    input();
+    
+    velocity = Vector2Scale(velocity, FRICTION);
+    position = Vector2Add(position, velocity);
+
+    inventory.update();
+}
+
+void Player::input()
 {
     if (IsKeyDown(KEY_W))
     {
@@ -31,7 +45,18 @@ void Player::update()
     {
         velocity.x += speed;
     } 
-    
-    velocity = Vector2Scale(velocity, FRICTION);
-    position = Vector2Add(position, velocity);
+
+
+    // Toggle inventory on and off
+    if (IsKeyReleased(KEY_E))
+    {
+        if (inventory.isShowing())
+        {
+            inventory.close();
+        }
+        else
+        {
+            inventory.open();
+        }
+    }
 }
