@@ -28,7 +28,7 @@ void Inventory::draw()
 {
     if (showing)
     {
-        for (std::shared_ptr<Cell> cell : cells)
+        for (std::shared_ptr<Cell>& cell : cells)
         {
             cell->draw();
         }
@@ -55,9 +55,13 @@ void Inventory::close()
 
 void Inventory::addItem(std::shared_ptr<Pickup> t_newItem)
 {
-    for (std::shared_ptr<Cell> cell : cells)
+    for (std::shared_ptr<Cell>& cell : cells)
     {
-        cell->addItem(t_newItem);
+        if (cell->isEmpty())
+        {
+            cell->addItem(t_newItem);
+            break;
+        }
     }
 }
 

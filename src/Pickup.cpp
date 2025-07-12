@@ -1,13 +1,16 @@
 #include "../include/Pickup.h"
 #include "../include/Globals.h"
 
-const float Pickup::TRACKING_RADIUS = 100.0f;
+const float Pickup::PICKUP_RADIUS = 250.0f;
 
 void Pickup::init(float t_radius, std::shared_ptr<Player> t_player)
 {
     player = t_player;
 
     GameObject::init({100, 100}, 10, YELLOW);
+
+    texture = LoadTexture(PICKUPS_PATH"/stick.png");
+    sprite->setTexture(texture);
 }
 
 void Pickup::spawn(Vector2 t_pos)
@@ -16,32 +19,35 @@ void Pickup::spawn(Vector2 t_pos)
     active = true;
 }
 
+void Pickup::update()
+{
+    if (checkCollision() && IsKeyPressed(KEY_E))
+    {
+        onPickup();
+    }
+}
+
 void Pickup::draw()
 {
     if (active)
     {
+        DrawCircleV(position, PICKUP_RADIUS, GREEN);
         GameObject::draw();
     }
 }
 
-void Pickup::update()
+bool Pickup::checkCollision()
 {
-    if (Vector2Distance(player->getPos(), position) <= TRACKING_RADIUS)
+    if (CheckCollisionCircles(position, PICKUP_RADIUS, player->getPos(), player->getRadius()))
     {
-        Vector2 dir = Vector2Normalize(Vector2Subtract(player->getPos(), position));    
-        dir = Vector2Scale(dir, 5.0f);
-
-        velocity = dir;
+        return true;
     }
-    else
-    {
-        velocity = Vector2Scale(velocity, FRICTION);
-    }
-
-    position = Vector2Add(position, velocity);
+    return false;
 }
 
 void Pickup::onPickup()
 {
-    // player->inventory.addItem(this);
+    player->inventory.addItem(shared_from_this());
+    active = false;
+    inInventory = true;
 }

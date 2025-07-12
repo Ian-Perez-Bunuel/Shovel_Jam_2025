@@ -10,16 +10,45 @@ void Game::init()
         pickups.push_back(std::make_shared<Pickup>());
         pickups[i]->init(10, player);
     }
+
+
+    initRenderer();
+}
+
+void Game::initRenderer()
+{
+    renderer = std::make_unique<Renderer>();
+    // Give the renderer all the sprites
+    renderer->addSprite(player->getSprite());
+
+    for (const std::shared_ptr<Pickup>& pickup : pickups)
+    {
+        renderer->addSprite(pickup->getSprite());
+    }
 }
 
 void Game::draw()
 {
-    for (const std::shared_ptr<Pickup> pickup : pickups)
+    drawGame();
+    drawUI();
+}
+
+void Game::drawGame()
+{
+    for (const std::shared_ptr<Pickup>& pickup : pickups)
     {
         pickup->draw();
     }
-
+    
     player->draw();
+
+    // Draw last Besides UI
+    renderer->drawAll();
+}
+
+void Game::drawUI()
+{
+    player->drawInventory();
 }
 
 void Game::update()
@@ -28,7 +57,7 @@ void Game::update()
 
     if (IsMouseButtonReleased(0))
     {
-        for (const std::shared_ptr<Pickup> pickup : pickups)
+        for (const std::shared_ptr<Pickup>& pickup : pickups)
         {
             if (!pickup->isActive())
             {
@@ -39,7 +68,7 @@ void Game::update()
         }
     }
 
-    for (const std::shared_ptr<Pickup> pickup : pickups)
+    for (const std::shared_ptr<Pickup>& pickup : pickups)
     {
         pickup->update();
     }

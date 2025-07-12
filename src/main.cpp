@@ -18,6 +18,8 @@ int main(void)
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Raylib StarterKit GPPI");
 
+    SetExitKey(KEY_BACKSPACE);
+
     // Initialise Game
     game.init();
 

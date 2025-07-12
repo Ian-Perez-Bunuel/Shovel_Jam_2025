@@ -3,6 +3,8 @@
 #include "raylib.h"
 #include "raymath.h"
 
+#include "../include/Drawable.h"
+
 class GameObject
 {
 public:
@@ -11,9 +13,15 @@ public:
     virtual void draw();
     virtual void update() = 0;
 
+    std::shared_ptr<Drawable> getSprite() const { return sprite; }
     Vector2 getPos() const { return position; }
+    float getRadius() const { return radius; }
 
 protected:
+    std::shared_ptr<Drawable> sprite;
+
+    bool active = false;
+
     Vector2 position;
     Vector2 velocity;
 

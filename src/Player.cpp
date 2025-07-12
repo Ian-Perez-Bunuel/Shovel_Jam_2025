@@ -12,7 +12,10 @@ void Player::init(Vector2 t_pos, float t_radius)
 void Player::draw()
 {
     GameObject::draw();
+}
 
+void Player::drawInventory()
+{
     inventory.draw();
 }
 
@@ -48,7 +51,7 @@ void Player::input()
 
 
     // Toggle inventory on and off
-    if (IsKeyReleased(KEY_E))
+    if (IsKeyReleased(KEY_ESCAPE))
     {
         if (inventory.isShowing())
         {

@@ -10,6 +10,7 @@ public:
     void init(Vector2 t_pos, float t_radius);
 
     void draw() override;
+    void drawInventory();
     void update() override;
 
     Inventory inventory;

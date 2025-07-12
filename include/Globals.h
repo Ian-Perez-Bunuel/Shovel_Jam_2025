@@ -1,6 +1,12 @@
 #pragma once
 
-static int SCREEN_WIDTH = 800;
-static int SCREEN_HEIGHT = 800;
+#define SPRITE_PATH     "resources/sprites"
+#define PICKUPS_PATH     SPRITE_PATH "/pickups"
 
-static float FRICTION = 0.75f;
+static const int SCREEN_WIDTH = 800;
+static const int SCREEN_HEIGHT = 800;
+static const int PIXEL_SCALE = 2;
+static const int INVENTORY_PIXEL_SCALE = 4;
+
+
+static const float FRICTION = 0.75f;
