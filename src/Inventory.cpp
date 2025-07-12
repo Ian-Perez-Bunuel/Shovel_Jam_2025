@@ -53,18 +53,35 @@ void Inventory::close()
     showing = false;
 }
 
-void Inventory::addItem(std::shared_ptr<Pickup> t_newItem)
+// If there is no space return false
+bool Inventory::addItem(std::shared_ptr<Pickup> t_newItem)
 {
-    for (std::shared_ptr<Cell>& cell : cells)
+    if (full)
     {
-        if (cell->isEmpty())
+        return false;
+    }
+    else
+    {
+        for (std::shared_ptr<Cell>& cell : cells)
         {
-            cell->addItem(t_newItem);
-            break;
+            if (cell->isEmpty())
+            {
+                itemsHeld++;
+                cell->addItem(t_newItem);
+                break;
+            }
         }
+
+        if (itemsHeld >= ROWS*COLUMNS)
+        {
+            full = true;
+        }
+
+        return true;
     }
 }
 
 void Inventory::removeItem(std::shared_ptr<Pickup> t_newItem)
 {
+    itemsHeld--;
 }

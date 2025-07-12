@@ -59,9 +59,11 @@ void Player::pickupClosestItem()
 {
     if (closestItem != nullptr)
     {
-        inventory.addItem(closestItem);
-        closestItem->pickup();
-        closestItem = nullptr;
+        if (inventory.addItem(closestItem))
+        {
+            closestItem->pickup();
+            closestItem = nullptr;
+        }
     }
 }
 

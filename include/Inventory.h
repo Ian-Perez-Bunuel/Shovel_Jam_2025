@@ -21,11 +21,13 @@ public:
 
     bool isShowing() { return showing; }
 
-    void addItem(std::shared_ptr<Pickup> t_newItem);
+    bool addItem(std::shared_ptr<Pickup> t_newItem);
     void removeItem(std::shared_ptr<Pickup> t_newItem);
 
 private:
     bool showing = false;
+    int itemsHeld = 0;
+    bool full = false;
 
     std::vector<std::shared_ptr<Cell>> cells;
 
