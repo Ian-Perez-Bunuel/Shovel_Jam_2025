@@ -32,6 +32,12 @@ void Game::initRenderer()
     renderer->addSprite(player->getSprite());
     renderer->addSprite(player->getWeapon().getSprite());
 
+    std::vector<std::shared_ptr<Projectile>>& playerProjectiles = player->getWeapon().getProjectiles();
+    for (std::shared_ptr<Projectile>& proj : playerProjectiles)
+    {
+        renderer->addSprite(proj->getSprite());
+    }
+
     for (const std::shared_ptr<Pickup>& pickup : pickups)
     {
         renderer->addSprite(pickup->getSprite());

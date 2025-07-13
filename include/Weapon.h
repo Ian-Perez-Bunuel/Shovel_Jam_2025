@@ -16,6 +16,7 @@ public:
 
     void shoot(Vector2 t_target);
     std::shared_ptr<Drawable>& getSprite() { return sprite; }
+    std::vector<std::shared_ptr<Projectile>>& getProjectiles() { return projectiles; }
 
     void draw();
     void updateProjectiles();
@@ -23,7 +24,15 @@ public:
     void setWeaponEffects(std::vector<Effect>& t_effects);
 private:
 
-    Effect weaponEffects;
+    Effect ORIGINAL_STATS;
+    const int ORIGINAL_DMG = 1;
+    const int ORIGINAL_RANGE = 350;
+    const int ORIGINAL_SHOTSPEED = 10;
+    const int ORIGINAL_RADIUS = 10;
+    const int ORIGINAL_FIRERATE = 1;
+
+    Effect staffStats;
+    Effect itemEffects;
     std::vector<std::shared_ptr<Projectile>> projectiles;
     static const int PROJECTILE_POOL_SIZE = 100;
 

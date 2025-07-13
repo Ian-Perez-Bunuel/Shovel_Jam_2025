@@ -5,7 +5,7 @@
 
 void Player::init(Vector2 t_pos, float t_radius)
 {
-    GameObject::init(t_pos, t_radius, BLUE);
+    GameObject::init(t_pos, 0, BLUE);
 
     inventory.init();
 
@@ -16,7 +16,7 @@ void Player::init(Vector2 t_pos, float t_radius)
 
     // Weapon init
     std::vector<Effect> weaponEffects = inventory.getEffects();
-    weapon = std::make_shared<Weapon>(weaponEffects, position);
+    weapon = std::make_shared<Weapon>(weaponEffects, weaponPos);
 }
 
 void Player::draw()
@@ -35,8 +35,10 @@ void Player::update()
     
     velocity = Vector2Scale(velocity, FRICTION);
     position = Vector2Add(position, velocity);
+    weaponPos = {position.x, position.y + 1};
 
     inventory.update();
+    weapon->updateProjectiles();
 }
 
 void Player::checkForPickups(std::vector<std::shared_ptr<Pickup>>& t_pickups)

@@ -12,12 +12,13 @@ struct Effect
 
     // Projectile
     std::vector<onHit> onHitEffects;
-    int damage = 1;
-    int range = 100;
-    int shotSpeed = 10;
-    int radius = 10;
-
+    int damage = 0;
+    int range = 0;
+    int shotSpeed = 0;
+    int radius = 0;
     // Weapon
-    int firerate = 2;
+    int firerate = 0;
 
 };
+
+void defaultEffect();

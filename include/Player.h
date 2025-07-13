@@ -25,6 +25,7 @@ private:
 
     // Weapon
     std::shared_ptr<Weapon> weapon;
+    Vector2 weaponPos;
     void updateWeaponEffects();
     void shoot();
 
