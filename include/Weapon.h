@@ -19,9 +19,10 @@ public:
 
     void draw();
     void updateProjectiles();
-private:
 
     void setWeaponEffects(std::vector<Effect>& t_effects);
+private:
+
     Effect weaponEffects;
     std::vector<std::shared_ptr<Projectile>> projectiles;
     static const int PROJECTILE_POOL_SIZE = 100;

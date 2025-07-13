@@ -30,7 +30,10 @@ std::vector<Effect> Inventory::getEffects()
 
     for (std::shared_ptr<Cell>& cell : cells)
     {
-        effects.push_back(cell->getItem()->getEffect());
+        if (cell->getItem() != nullptr)
+        {
+            effects.push_back(cell->getItem()->getEffect());
+        }
     }
 
     return effects;

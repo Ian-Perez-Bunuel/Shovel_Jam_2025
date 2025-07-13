@@ -11,7 +11,6 @@ struct Effect
     // What changes
 
     // Projectile
-    Texture2D texture;
     std::vector<onHit> onHitEffects;
     int damage = 1;
     int range = 100;

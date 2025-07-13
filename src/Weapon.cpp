@@ -28,8 +28,6 @@ void Weapon::setWeaponEffects(std::vector<Effect>& t_effects)
             weaponEffects.onHitEffects.push_back(hitEffect);
         }
 
-        weaponEffects.texture = effect.texture; // How the projectile looks
-
         weaponEffects.damage += effect.damage;
         weaponEffects.firerate += effect.firerate;
         weaponEffects.range += effect.range;

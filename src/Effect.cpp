@@ -1,5 +1,5 @@
 #include "../include/Effect.h"
-
+#include "../include/Globals.h"
 
 void defaultEffect()
 {

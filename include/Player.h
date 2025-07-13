@@ -25,6 +25,7 @@ private:
 
     // Weapon
     std::shared_ptr<Weapon> weapon;
+    void updateWeaponEffects();
     void shoot();
 
     // Picking up items

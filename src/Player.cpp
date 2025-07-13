@@ -67,6 +67,7 @@ void Player::checkForPickups(std::vector<std::shared_ptr<Pickup>>& t_pickups)
         if (droppedItem != nullptr) // drop if should drop
         {
             t_pickups.push_back(droppedItem);
+            updateWeaponEffects();
         }
     }
 }
@@ -121,6 +122,8 @@ void Player::input()
     if (IsKeyPressed(KEY_E))
     {
         pickupClosestItem();
+
+        updateWeaponEffects();
     }
 
     // Shooting
@@ -128,6 +131,12 @@ void Player::input()
     {
         shoot();
     }
+}
+
+void Player::updateWeaponEffects()
+{
+    std::vector<Effect> weaponEffects = inventory.getEffects();
+    weapon->setWeaponEffects(weaponEffects);
 }
 
 void Player::shoot()
