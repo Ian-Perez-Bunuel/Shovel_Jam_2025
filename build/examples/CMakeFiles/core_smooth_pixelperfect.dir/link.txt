@@ -1,0 +1,3 @@
+C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\core_smooth_pixelperfect.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\core_smooth_pixelperfect.dir/objects.a @CMakeFiles\core_smooth_pixelperfect.dir\objects1.rsp
+C:\msys64\ucrt64\bin\gcc.exe -std=c11 -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -Wl,--whole-archive CMakeFiles\core_smooth_pixelperfect.dir/objects.a -Wl,--no-whole-archive -o core_smooth_pixelperfect.exe -Wl,--out-implib,libcore_smooth_pixelperfect.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\core_smooth_pixelperfect.dir\linkLibs.rsp

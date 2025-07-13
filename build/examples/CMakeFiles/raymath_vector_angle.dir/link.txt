@@ -1,0 +1,3 @@
+C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\raymath_vector_angle.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\raymath_vector_angle.dir/objects.a @CMakeFiles\raymath_vector_angle.dir\objects1.rsp
+C:\msys64\ucrt64\bin\gcc.exe -std=c11 -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -Wl,--whole-archive CMakeFiles\raymath_vector_angle.dir/objects.a -Wl,--no-whole-archive -o raymath_vector_angle.exe -Wl,--out-implib,libraymath_vector_angle.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\raymath_vector_angle.dir\linkLibs.rsp

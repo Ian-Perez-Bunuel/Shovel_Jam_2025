@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+#include "../include/Effect.h"
+
 class Pickup;
 class Cell;
 
@@ -21,13 +23,17 @@ public:
 
     bool isShowing() { return showing; }
 
+    std::vector<Effect> getEffects();
+
     bool addItem(std::shared_ptr<Pickup> t_newItem);
-    void removeItem(std::shared_ptr<Pickup> t_newItem);
+    std::shared_ptr<Pickup> removeItem();
 
 private:
     bool showing = false;
     int itemsHeld = 0;
     bool full = false;
+
+    const float CLOSED_SCALE = 0.5f;
 
     std::vector<std::shared_ptr<Cell>> cells;
 

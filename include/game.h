@@ -21,17 +21,19 @@ public:
 private:
     void drawGame();
     void drawUI();
-    
+
     void initRenderer();
     std::unique_ptr<Renderer> renderer;
 
     std::shared_ptr<Player> player;
 
+    Camera2D camera;
 
     std::vector<std::shared_ptr<Pickup>> pickups;
 
+
     // TEMP
-    const int PICKUP_AMOUNT = 10;
+    const int PICKUP_AMOUNT = 100;
 };
 
 #endif // GAME_H

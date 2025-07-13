@@ -1,0 +1,3 @@
+C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\models_rlgl_solar_system.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\models_rlgl_solar_system.dir/objects.a @CMakeFiles\models_rlgl_solar_system.dir\objects1.rsp
+C:\msys64\ucrt64\bin\gcc.exe -std=c11 -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -Wl,--whole-archive CMakeFiles\models_rlgl_solar_system.dir/objects.a -Wl,--no-whole-archive -o models_rlgl_solar_system.exe -Wl,--out-implib,libmodels_rlgl_solar_system.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\models_rlgl_solar_system.dir\linkLibs.rsp

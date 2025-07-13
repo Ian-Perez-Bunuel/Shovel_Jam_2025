@@ -1,0 +1,3 @@
+C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\easings_testbed.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\easings_testbed.dir/objects.a @CMakeFiles\easings_testbed.dir\objects1.rsp
+C:\msys64\ucrt64\bin\gcc.exe -std=c11 -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -Wl,--whole-archive CMakeFiles\easings_testbed.dir/objects.a -Wl,--no-whole-archive -o easings_testbed.exe -Wl,--out-implib,libeasings_testbed.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\easings_testbed.dir\linkLibs.rsp

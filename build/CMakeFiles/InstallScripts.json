@@ -1,0 +1,11 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/Ian/Desktop/Game-Jams/Shovel_2025_Jam/build/cmake_install.cmake",
+		"C:/Users/Ian/Desktop/Game-Jams/Shovel_2025_Jam/build/raylib/cmake_install.cmake",
+		"C:/Users/Ian/Desktop/Game-Jams/Shovel_2025_Jam/build/raylib/external/glfw/cmake_install.cmake",
+		"C:/Users/Ian/Desktop/Game-Jams/Shovel_2025_Jam/build/raylib/external/glfw/src/cmake_install.cmake",
+		"C:/Users/Ian/Desktop/Game-Jams/Shovel_2025_Jam/build/examples/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,7 +1,7 @@
 #include "../include/Pickup.h"
 #include "../include/Globals.h"
 
-const float Pickup::PICKUP_RADIUS = 250.0f;
+const float Pickup::PICKUP_RADIUS = 150.0f;
 
 void Pickup::init(float t_radius, std::shared_ptr<Player> t_player)
 {
@@ -17,11 +17,15 @@ void Pickup::spawn(Vector2 t_pos)
 {
     position = t_pos;
     active = true;
+    inInventory = false;
 }
 
 void Pickup::update()
 {
-
+    if (inInventory)
+    {
+        position = player->getPos();
+    }
 }
 
 void Pickup::draw()
@@ -37,4 +41,10 @@ void Pickup::pickup()
 {
     active = false;
     inInventory = true;
+}
+
+void Pickup::drop()
+{
+    inInventory = false;
+    active = true;
 }

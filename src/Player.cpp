@@ -1,6 +1,7 @@
 #include "../include/Player.h"
 #include <raymath.h>
 #include "../include/Globals.h"
+#include "../include/Effect.h"
 
 void Player::init(Vector2 t_pos, float t_radius)
 {
@@ -12,6 +13,10 @@ void Player::init(Vector2 t_pos, float t_radius)
     texture = LoadTexture(PLAYER_PATH"/Player_Atlas.png");
     sprite->setTexture(texture);
     sprite->setAnimations(3, 4, 32, 32);
+
+    // Weapon init
+    std::vector<Effect> weaponEffects = inventory.getEffects();
+    weapon = std::make_shared<Weapon>(weaponEffects, position);
 }
 
 void Player::draw()
@@ -38,6 +43,7 @@ void Player::checkForPickups(std::vector<std::shared_ptr<Pickup>>& t_pickups)
 {
     // Find closest pickup
     float closestDist = 100000000.0f;
+    closestItem = nullptr;
 
     for (std::shared_ptr<Pickup>& item : t_pickups)
     {
@@ -51,6 +57,16 @@ void Player::checkForPickups(std::vector<std::shared_ptr<Pickup>>& t_pickups)
                 closestDist = dist;
                 closestItem = item;
             }
+        }
+    }
+
+    // Drop items
+    if (IsMouseButtonReleased(1))
+    {
+        std::shared_ptr<Pickup> droppedItem = inventory.removeItem();
+        if (droppedItem != nullptr) // drop if should drop
+        {
+            t_pickups.push_back(droppedItem);
         }
     }
 }
@@ -69,6 +85,7 @@ void Player::pickupClosestItem()
 
 void Player::input()
 {
+    // Movement
     if (IsKeyDown(KEY_W))
     {
         velocity.y -= speed;
@@ -100,9 +117,20 @@ void Player::input()
             inventory.open();
         }
     }
-
+    // Pickup item
     if (IsKeyPressed(KEY_E))
     {
         pickupClosestItem();
     }
+
+    // Shooting
+    if (IsMouseButtonDown(0))
+    {
+        shoot();
+    }
+}
+
+void Player::shoot()
+{
+    weapon->shoot(mousePos);
 }

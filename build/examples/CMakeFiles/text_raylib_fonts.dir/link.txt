@@ -1,0 +1,3 @@
+C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\text_raylib_fonts.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\text_raylib_fonts.dir/objects.a @CMakeFiles\text_raylib_fonts.dir\objects1.rsp
+C:\msys64\ucrt64\bin\gcc.exe -std=c11 -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -Wl,--whole-archive CMakeFiles\text_raylib_fonts.dir/objects.a -Wl,--no-whole-archive -o text_raylib_fonts.exe -Wl,--out-implib,libtext_raylib_fonts.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\text_raylib_fonts.dir\linkLibs.rsp

@@ -1,4 +1,5 @@
 #include "../include/game.h"
+#include "../include/Globals.h"
 
 void Game::init()
 {
@@ -9,7 +10,16 @@ void Game::init()
     {
         pickups.push_back(std::make_shared<Pickup>());
         pickups[i]->init(10, player);
+
+        Vector2 randPos = {rand() % 1000, rand() % 1000};
+        pickups[i]->spawn(randPos);
     }
+
+    // --- Camera setup ---
+    camera.target = player->getPos();                 
+    camera.offset = { SCREEN_WIDTH/2, SCREEN_HEIGHT/2 }; 
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;   
 
 
     initRenderer();
@@ -20,6 +30,7 @@ void Game::initRenderer()
     renderer = std::make_unique<Renderer>();
     // Give the renderer all the sprites
     renderer->addSprite(player->getSprite());
+    renderer->addSprite(player->getWeapon().getSprite());
 
     for (const std::shared_ptr<Pickup>& pickup : pickups)
     {
@@ -35,15 +46,20 @@ void Game::draw()
 
 void Game::drawGame()
 {
-    for (const std::shared_ptr<Pickup>& pickup : pickups)
-    {
-        pickup->draw();
-    }
+    BeginMode2D(camera);
+
+    // for (const std::shared_ptr<Pickup>& pickup : pickups)
+    // {
+    //     pickup->draw();
+    // }
     
-    player->draw();
+    //player->draw();
+
 
     // Draw last Besides UI
     renderer->drawAll();
+
+    EndMode2D();
 }
 
 void Game::drawUI()
@@ -53,24 +69,15 @@ void Game::drawUI()
 
 void Game::update()
 {
+    mousePos = GetScreenToWorld2D(GetMousePosition(), camera);
+
     player->update();
     player->checkForPickups(pickups);
-
-    if (IsMouseButtonReleased(0))
-    {
-        for (const std::shared_ptr<Pickup>& pickup : pickups)
-        {
-            if (!pickup->isActive())
-            {
-                printf("\nSPAWN at: %f, %f\n\n", GetMousePosition().x, GetMousePosition().y);
-                pickup->spawn(GetMousePosition());
-                break;
-            }
-        }
-    }
 
     for (const std::shared_ptr<Pickup>& pickup : pickups)
     {
         pickup->update();
     }
+
+    camera.target = player->getPos();
 }

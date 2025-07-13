@@ -2,7 +2,7 @@
 
 const int Inventory::ROWS = 1;
 const int Inventory::COLUMNS = 5;
-const int Inventory::SIDE_PADDING = 150;
+const int Inventory::SIDE_PADDING = 185;
 const int Inventory::TOP_PADDING = 50;
 const int Inventory::SPACING = 15;
 
@@ -24,23 +24,47 @@ void Inventory::init()
     }
 }
 
+std::vector<Effect> Inventory::getEffects()
+{
+    std::vector<Effect> effects;
+
+    for (std::shared_ptr<Cell>& cell : cells)
+    {
+        effects.push_back(cell->getItem()->getEffect());
+    }
+
+    return effects;
+}
+
 void Inventory::draw()
 {
-    if (showing)
+    for (std::shared_ptr<Cell>& cell : cells)
     {
-        for (std::shared_ptr<Cell>& cell : cells)
+        if (showing)
         {
-            cell->draw();
+            cell->draw(1);
+        }
+        else
+        {
+            cell->draw(CLOSED_SCALE);
         }
     }
 }
 
 void Inventory::update()
 {
-    if (showing)
+    for (std::shared_ptr<Cell>& cell : cells)
     {
-
+        if (showing)
+        {
+            cell->checkHover();
+        }
+        else
+        {
+            cell->setColor(WHITE);
+        }
     }
+
 }
 
 void Inventory::open()
@@ -81,7 +105,20 @@ bool Inventory::addItem(std::shared_ptr<Pickup> t_newItem)
     }
 }
 
-void Inventory::removeItem(std::shared_ptr<Pickup> t_newItem)
+std::shared_ptr<Pickup> Inventory::removeItem()
 {
-    itemsHeld--;
+    for (std::shared_ptr<Cell>& cell : cells)
+    {
+        if (showing)
+        {
+            if (cell->checkHover())
+            {
+                itemsHeld--;
+                full = false;
+                return cell->removeItem();// Should return the item removed from the cell
+            }
+        }
+    }
+
+    return nullptr;
 }

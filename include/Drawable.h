@@ -8,7 +8,7 @@
 class Drawable
 {
 public:
-    Drawable(Vector2& t_pos, bool& t_isDrawing);
+    Drawable(Vector2& t_pos, bool& t_active);
 
     void setAnimations(int t_rowNum, int t_colNum, int t_frameWidth, int t_frameHeight);
     void setTexture(Texture2D& t_tex);

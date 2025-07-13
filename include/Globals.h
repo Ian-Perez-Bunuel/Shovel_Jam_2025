@@ -1,4 +1,5 @@
 #pragma once
+#include "raylib.h"
 
 #define SPRITE_PATH     "resources/sprites"
 #define PICKUPS_PATH    SPRITE_PATH "/pickups"
@@ -11,3 +12,5 @@ static const int INVENTORY_PIXEL_SCALE = 4;
 
 
 static const float FRICTION = 0.75f;
+
+inline Vector2 mousePos = {0, 0}; // Use GetMousePosition for UI

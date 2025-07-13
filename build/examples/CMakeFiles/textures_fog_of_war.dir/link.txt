@@ -1,0 +1,3 @@
+C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\textures_fog_of_war.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\textures_fog_of_war.dir/objects.a @CMakeFiles\textures_fog_of_war.dir\objects1.rsp
+C:\msys64\ucrt64\bin\gcc.exe -std=c11 -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -Wl,--whole-archive CMakeFiles\textures_fog_of_war.dir/objects.a -Wl,--no-whole-archive -o textures_fog_of_war.exe -Wl,--out-implib,libtextures_fog_of_war.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\textures_fog_of_war.dir\linkLibs.rsp

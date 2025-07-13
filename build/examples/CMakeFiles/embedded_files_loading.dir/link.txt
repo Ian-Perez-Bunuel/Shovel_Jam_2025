@@ -1,0 +1,3 @@
+C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\embedded_files_loading.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\embedded_files_loading.dir/objects.a @CMakeFiles\embedded_files_loading.dir\objects1.rsp
+C:\msys64\ucrt64\bin\gcc.exe -std=c11 -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -Wl,--whole-archive CMakeFiles\embedded_files_loading.dir/objects.a -Wl,--no-whole-archive -o embedded_files_loading.exe -Wl,--out-implib,libembedded_files_loading.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\embedded_files_loading.dir\linkLibs.rsp

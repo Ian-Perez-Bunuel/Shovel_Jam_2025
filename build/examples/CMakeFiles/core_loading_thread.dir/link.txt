@@ -1,0 +1,3 @@
+C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\core_loading_thread.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\core_loading_thread.dir/objects.a @CMakeFiles\core_loading_thread.dir\objects1.rsp
+C:\msys64\ucrt64\bin\gcc.exe -std=c11 -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -Wl,--whole-archive CMakeFiles\core_loading_thread.dir/objects.a -Wl,--no-whole-archive -o core_loading_thread.exe -Wl,--out-implib,libcore_loading_thread.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\core_loading_thread.dir\linkLibs.rsp

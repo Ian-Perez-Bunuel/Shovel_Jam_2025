@@ -2,6 +2,7 @@
 
 #include "../include/GameObject.h"
 #include "../include/Inventory.h"
+#include "../include/Weapon.h"
 
 class Pickup;
 
@@ -14,11 +15,17 @@ public:
     void drawInventory();
     void update();
 
+    Weapon& getWeapon() { return *weapon; }
+
     void checkForPickups(std::vector<std::shared_ptr<Pickup>>& t_pickups);
     Inventory inventory;
 
 private:
     void input();
+
+    // Weapon
+    std::shared_ptr<Weapon> weapon;
+    void shoot();
 
     // Picking up items
     void pickupClosestItem();
