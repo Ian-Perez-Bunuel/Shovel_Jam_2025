@@ -7,9 +7,7 @@
 #include <vector>
 #include <memory>
 
-#include "../include/Player.h"
-#include "../include/Enemy.h"
-#include "../include/Pickup.h"
+#include "../include/Projectile.h"
 #include "../include/Renderer.h"
 
 class Game
@@ -26,15 +24,15 @@ private:
     void initRenderer();
     std::unique_ptr<Renderer> renderer;
 
-    std::shared_ptr<Player> player;
-    std::vector<std::shared_ptr<Enemy>> enemies;
+    Texture2D ballTexture;
+    std::shared_ptr<Projectile> ball;
 
-    Camera2D camera;
+    static const int MAX_OBSTACLES = 100;
+    const int TILE_SIZE = 100;
+    Texture2D boxTexture;
+    std::vector<std::shared_ptr<Obstacle>> obstacles;
 
-
-    // TEMP
-    const int PICKUP_AMOUNT = 100;
-    const int ENEMY_AMOUNT = 1;
+    Vector2 startPos;
 };
 
 #endif // GAME_H

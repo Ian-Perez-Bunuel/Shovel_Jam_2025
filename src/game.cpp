@@ -1,34 +1,27 @@
 #include "../include/game.h"
-#include "../include/Pools.h"
 #include "../include/Globals.h"
 
 void Game::init()
-{
-    ProjectilePool::init();
-    
-    player = std::make_shared<Player>();
-    player->init({0, 0}, 25.0f);
-    
-    PickupPool::init(10, player);
+{    
+    startPos = {150.0f, SCREEN_HEIGHT / 2.0f};
 
-    for (int i = 0; i < PickupPool::PICKUP_POOL_SIZE; i++)
-    {
-        Vector2 randPos = {rand() % 1000, rand() % 1000};
-        PickupPool::pickups[i]->spawn(randPos);
-    }
+    ballTexture = LoadTexture(PLAYER_PATH"/ball.png");
+    ball = std::make_shared<Projectile>(ballTexture, startPos);
 
-    for (int i = 0; i < ENEMY_AMOUNT; i++)
-    {
-        enemies.push_back(std::make_shared<Enemy>());
-        enemies[i]->init();
-    }
+    boxTexture = LoadTexture(SPRITE_PATH"/block.png");
+    SetTextureWrap(boxTexture, TEXTURE_WRAP_REPEAT);
+    // Encase the screen in boxes
+    Vector2 pos = {SCREEN_WIDTH / 2.0f, 0.0f};
+    obstacles.push_back(std::make_shared<Obstacle>(pos, YELLOW, boxTexture, SCREEN_WIDTH, TILE_SIZE));
+    pos = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT};
+    obstacles.push_back(std::make_shared<Obstacle>(pos, YELLOW, boxTexture, SCREEN_WIDTH, TILE_SIZE));
+    pos = {0.0f, SCREEN_HEIGHT / 2.0f};
+    obstacles.push_back(std::make_shared<Obstacle>(pos, YELLOW, boxTexture, TILE_SIZE, SCREEN_HEIGHT));
+    pos = {SCREEN_WIDTH, SCREEN_HEIGHT / 2.0f};
+    obstacles.push_back(std::make_shared<Obstacle>(pos, YELLOW, boxTexture, TILE_SIZE, SCREEN_HEIGHT));
 
-    // --- Camera setup ---
-    camera.target = player->getPos();                 
-    camera.offset = { SCREEN_WIDTH/2, SCREEN_HEIGHT/2 }; 
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;   
-
+    pos = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
+    obstacles.push_back(std::make_shared<Obstacle>(pos, YELLOW, boxTexture, TILE_SIZE, TILE_SIZE));
 
     initRenderer();
 }
@@ -36,28 +29,13 @@ void Game::init()
 void Game::initRenderer()
 {
     renderer = std::make_unique<Renderer>();
+
     // Give the renderer all the sprites
-    renderer->addSprite(player->getSprite());
-    renderer->addSprite(player->getWeapon()->getSprite());
+    renderer->addSprite(ball->getSprite());
 
-    for (std::shared_ptr<Projectile>& proj : ProjectilePool::playerProjectiles)
+    for (std::shared_ptr<Obstacle>& obstacle : obstacles)
     {
-        renderer->addSprite(proj->getSprite());
-    }
-
-    for (std::shared_ptr<Projectile>& proj : ProjectilePool::enemyProjectiles)
-    {
-        renderer->addSprite(proj->getSprite());
-    }
-
-    for (const std::shared_ptr<Pickup>& pickup : PickupPool::pickups)
-    {
-        renderer->addSprite(pickup->getSprite());
-    }
-
-    for (const std::shared_ptr<Enemy>& enemy : enemies)
-    {
-        renderer->addSprite(enemy->getSprite());
+        renderer->addSprite(obstacle->getSprite());
     }
 }
 
@@ -69,57 +47,24 @@ void Game::draw()
 
 void Game::drawGame()
 {
-    BeginMode2D(camera);
-
-    for (const std::shared_ptr<Pickup>& pickup : PickupPool::pickups)
+    for (std::shared_ptr<Obstacle>& obstacle : obstacles)
     {
-        pickup->draw();
-    }
-    
-    player->draw();
-
-    for (const std::shared_ptr<Enemy>& enemy : enemies)
-    {
-        enemy->draw();
+        obstacle->draw();
     }
 
-    for (std::shared_ptr<Projectile>& proj : ProjectilePool::playerProjectiles)
-    {
-        proj->draw();
-    }
-    for (std::shared_ptr<Projectile>& proj : ProjectilePool::enemyProjectiles)
-    {
-        proj->draw();
-    }
-
+    ball->draw();
 
     // Draw last Besides UI
     renderer->drawAll();
-
-    EndMode2D();
 }
 
 void Game::drawUI()
 {
-    player->drawInventory();
 
-    for (const std::shared_ptr<Enemy>& enemy : enemies)
-    {
-        enemy->update(player);
-    }
 }
 
 void Game::update()
 {
-    mousePos = GetScreenToWorld2D(GetMousePosition(), camera);
-
-    player->update();
-    player->checkForPickups();
-
-    for (const std::shared_ptr<Pickup>& pickup : PickupPool::pickups)
-    {
-        pickup->update();
-    }
-
-    camera.target = player->getPos();
+    ball->update(obstacles);
+   // ball->checkCollisions(obstacles);
 }
