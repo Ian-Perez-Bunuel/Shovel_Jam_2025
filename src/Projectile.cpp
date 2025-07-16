@@ -1,11 +1,11 @@
 #include "../include/Projectile.h"
 #include "../include/Globals.h"
 
-Projectile::Projectile()
+Projectile::Projectile(Texture2D& t_texture)
+    : texture(t_texture)
 {
     GameObject::init(position, effects.radius, WHITE);
     sprite = std::make_shared<Drawable>(position, active);
-    texture = LoadTexture(PLAYER_PATH"/bullet.png");
     sprite->setTexture(texture);
     active = false;
 }
@@ -21,8 +21,12 @@ void Projectile::shoot(Effect &t_effects, Vector2 t_pos, Vector2 t_dir)
     active = true;
 }
 
-void Projectile::destroy()
+void Projectile::hit()
 {
+    for (onHit effect : effects.onHitEffects)
+    {
+        effect();
+    }
     active = false;
 }
 
@@ -32,6 +36,14 @@ void Projectile::update()
 
     if (Vector2Distance(position, spawnPos) > effects.range)
     {
-        destroy();
+        hit();
+    }
+}
+
+void Projectile::draw()
+{
+    if (active)
+    {
+        GameObject::draw();
     }
 }

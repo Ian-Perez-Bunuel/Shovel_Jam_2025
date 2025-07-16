@@ -25,8 +25,6 @@ public:
 
     virtual void pickup();
     virtual void drop();
-    
-    static const float PICKUP_RADIUS;
 
 protected:
 

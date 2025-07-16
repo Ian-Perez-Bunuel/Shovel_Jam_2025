@@ -1,7 +1,6 @@
 #include "../include/Pickup.h"
 #include "../include/Globals.h"
 
-const float Pickup::PICKUP_RADIUS = 150.0f;
 
 void Pickup::init(float t_radius, std::shared_ptr<Player> t_player)
 {
@@ -32,7 +31,6 @@ void Pickup::draw()
 {
     if (active)
     {
-        DrawCircleV(position, PICKUP_RADIUS, GREEN);
         GameObject::draw();
     }
 }

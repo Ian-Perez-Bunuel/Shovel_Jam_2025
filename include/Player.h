@@ -3,6 +3,7 @@
 #include "../include/GameObject.h"
 #include "../include/Inventory.h"
 #include "../include/Weapon.h"
+#include "../include/Health.h"
 
 class Pickup;
 
@@ -15,10 +16,11 @@ public:
     void drawInventory();
     void update();
 
-    Weapon& getWeapon() { return *weapon; }
+    std::shared_ptr<Weapon>& getWeapon() { return weapon; }
 
-    void checkForPickups(std::vector<std::shared_ptr<Pickup>>& t_pickups);
+    void checkForPickups();
     Inventory inventory;
+    Health health;
 
 private:
     void input();
@@ -29,11 +31,16 @@ private:
     void updateWeaponEffects();
     void shoot();
 
+    void checkForCollisions();
+
     // Picking up items
     void pickupClosestItem();
     std::shared_ptr<Pickup> closestItem;
 
     float speed = 2.0f;
+
+
+    static const int PICKUP_RADIUS;
 };
 
 #include "../include/Pickup.h"

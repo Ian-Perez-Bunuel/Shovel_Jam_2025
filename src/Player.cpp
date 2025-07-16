@@ -2,21 +2,25 @@
 #include <raymath.h>
 #include "../include/Globals.h"
 #include "../include/Effect.h"
+#include "../include/Pools.h"
+
+const int Player::PICKUP_RADIUS = 125;
 
 void Player::init(Vector2 t_pos, float t_radius)
 {
-    GameObject::init(t_pos, 0, BLUE);
+    GameObject::init(t_pos, 20, BLUE);
 
     inventory.init();
+    health.init(100);
 
     active = true;
     texture = LoadTexture(PLAYER_PATH"/Player_Atlas.png");
     sprite->setTexture(texture);
-    sprite->setAnimations(3, 4, 32, 32);
+    sprite->setAnimations(1, 3, 16, 16);
 
     // Weapon init
     std::vector<Effect> weaponEffects = inventory.getEffects();
-    weapon = std::make_shared<Weapon>(weaponEffects, weaponPos);
+    weapon = std::make_shared<Weapon>(weaponEffects, weaponPos, ProjectilePool::playerProjectiles);
 }
 
 void Player::draw()
@@ -35,22 +39,39 @@ void Player::update()
     
     velocity = Vector2Scale(velocity, FRICTION);
     position = Vector2Add(position, velocity);
-    weaponPos = {position.x, position.y + 1};
+    weaponPos = {position.x, position.y - 1};
 
     inventory.update();
     weapon->updateProjectiles();
+
+    checkForCollisions();
 }
 
-void Player::checkForPickups(std::vector<std::shared_ptr<Pickup>>& t_pickups)
+void Player::checkForCollisions()
+{
+    for (std::shared_ptr<Projectile>& proj : ProjectilePool::enemyProjectiles)
+    {
+        if (proj->isActive())
+        {
+            if (CheckCollisionCircles(proj->getPos(), proj->getRadius(), position, radius))
+            {
+                health.takeDamage(proj->getDamage());
+                proj->hit();
+            }
+        }
+    }
+}
+
+void Player::checkForPickups()
 {
     // Find closest pickup
     float closestDist = 100000000.0f;
     closestItem = nullptr;
 
-    for (std::shared_ptr<Pickup>& item : t_pickups)
+    for (std::shared_ptr<Pickup>& item : PickupPool::pickups)
     {
         // Check if in range first
-        if (Vector2Distance(position, item->getPos()) <= Pickup::PICKUP_RADIUS && item->isActive())
+        if (Vector2Distance(position, item->getPos()) <= PICKUP_RADIUS && item->isActive())
         {
             // In range
             float dist = Vector2Distance(position, item->getPos());
@@ -68,7 +89,7 @@ void Player::checkForPickups(std::vector<std::shared_ptr<Pickup>>& t_pickups)
         std::shared_ptr<Pickup> droppedItem = inventory.removeItem();
         if (droppedItem != nullptr) // drop if should drop
         {
-            t_pickups.push_back(droppedItem);
+            PickupPool::pickups.push_back(droppedItem);
             updateWeaponEffects();
         }
     }

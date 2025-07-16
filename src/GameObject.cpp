@@ -13,8 +13,6 @@ void GameObject::draw()
 {   
     // Hitbox
     DrawCircleV(position, radius, color);
-    // Sprite - Only drawn when one is set
-    // sprite->draw();
 }
 
 void GameObject::update()

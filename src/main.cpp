@@ -58,8 +58,8 @@ void GameLoop(void)
     ClearBackground(BLACK);
 
     // Draw the Game Objects
-    DrawFPS(0, 0);
     game.draw();
+    DrawFPS(0, 0);
 
     counter++;
 

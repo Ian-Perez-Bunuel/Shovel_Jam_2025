@@ -1,8 +1,9 @@
 #include "../include/Weapon.h"
+#include "../include/Pools.h"
 #include "../include/Globals.h"
 
-Weapon::Weapon(std::vector<Effect>& t_effects, Vector2& t_holderPos)
-    :    position(t_holderPos)
+Weapon::Weapon(std::vector<Effect>& t_effects, Vector2& t_holderPos, std::vector<std::shared_ptr<Projectile>>& t_projectilePool)
+    :    position(t_holderPos), projectiles(t_projectilePool)
 {
     // Set original staff stats
     ORIGINAL_STATS.onHitEffects.push_back(defaultEffect);
@@ -16,17 +17,13 @@ Weapon::Weapon(std::vector<Effect>& t_effects, Vector2& t_holderPos)
     texture = LoadTexture(PLAYER_PATH "/weapon.png");
     sprite  = std::make_shared<Drawable>(position, active);
     sprite->setTexture(texture);
-
-    // build a real pool of live Projectiles
-    projectiles.reserve(PROJECTILE_POOL_SIZE);
-    for (int i = 0; i < PROJECTILE_POOL_SIZE; ++i)
-    {
-        projectiles.emplace_back(std::make_shared<Projectile>());
-    } 
 }
 
 void Weapon::setWeaponEffects(std::vector<Effect>& t_effects)
 {
+    itemEffects.onHitEffects.clear();
+    staffStats.onHitEffects.clear();
+
     for (Effect& effect : t_effects)
     {
         // Add all effects to the staff's effect
@@ -55,23 +52,47 @@ void Weapon::setWeaponEffects(std::vector<Effect>& t_effects)
     staffStats.radius = itemEffects.radius + ORIGINAL_STATS.radius;
 }
 
+void Weapon::shootCounter()
+{
+    // Check if can shoot
+    if (firerateTimer < staffStats.firerate)
+    {
+        firerateTimer += GetFrameTime();
+    }
+    else
+    {
+        firerateTimer = 0;
+
+        canShoot = true;
+    }
+}
+
 
 void Weapon::shoot(Vector2 t_target)
 {
-    Vector2 dir = Vector2Subtract(t_target, position);
-
-    for (std::shared_ptr<Projectile>& proj : projectiles)
+    if (canShoot)
     {
-        if (!proj->isActive())
+        Vector2 dir = Vector2Subtract(t_target, position);
+
+        for (std::shared_ptr<Projectile>& proj : projectiles)
         {
-            proj->shoot(staffStats, position, dir);
-            break;
+            if (!proj->isActive())
+            {
+                proj->shoot(staffStats, position, dir);
+                canShoot = false;
+                break;
+            }
         }
     }
 }
 
 void Weapon::updateProjectiles()
 {
+    if (!canShoot)
+    {
+        shootCounter();
+    }
+
     for (std::shared_ptr<Projectile>& proj : projectiles)
     {
         if (proj->isActive())

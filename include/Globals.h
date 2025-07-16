@@ -4,6 +4,7 @@
 #define SPRITE_PATH     "resources/sprites"
 #define PICKUPS_PATH    SPRITE_PATH "/pickups"
 #define PLAYER_PATH     SPRITE_PATH "/player"
+#define ENEMY_PATH      SPRITE_PATH "/enemy"
 
 static const int SCREEN_WIDTH = 800;
 static const int SCREEN_HEIGHT = 800;

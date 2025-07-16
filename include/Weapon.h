@@ -12,7 +12,7 @@ class Projectile;
 class Weapon
 {
 public:
-    Weapon(std::vector<Effect>& t_effects, Vector2& t_holderPos);
+    Weapon(std::vector<Effect>& t_effects, Vector2& t_holderPos, std::vector<std::shared_ptr<Projectile>>& t_projectilePool);
 
     void shoot(Vector2 t_target);
     std::shared_ptr<Drawable>& getSprite() { return sprite; }
@@ -22,6 +22,7 @@ public:
     void updateProjectiles();
 
     void setWeaponEffects(std::vector<Effect>& t_effects);
+    Effect getStats() { return staffStats; }
 private:
 
     Effect ORIGINAL_STATS;
@@ -33,8 +34,10 @@ private:
 
     Effect staffStats;
     Effect itemEffects;
-    std::vector<std::shared_ptr<Projectile>> projectiles;
-    static const int PROJECTILE_POOL_SIZE = 100;
+    void shootCounter();
+    bool canShoot = true;
+    float firerateTimer = 0.0f;
+    std::vector<std::shared_ptr<Projectile>>& projectiles;
 
     Texture2D texture;
     std::shared_ptr<Drawable> sprite;
