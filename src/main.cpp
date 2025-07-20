@@ -16,7 +16,6 @@ Game game;
 
 int main(void)
 {
-
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Raylib StarterKit GPPI");
 
     SetExitKey(KEY_BACKSPACE);
@@ -55,7 +54,7 @@ void GameLoop(void)
     // Should be outside BeginDrawing(); and EndDrawing();
     game.update();
 
-    ClearBackground(BLACK);
+    ClearBackground(GREEN);
 
     // Draw the Game Objects
     game.draw();

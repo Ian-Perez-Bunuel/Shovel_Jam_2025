@@ -21,9 +21,21 @@ public:
     void update(const std::vector<std::shared_ptr<Obstacle>>& obstacles);
     void draw() override;
 
-    void setEffect(Effect& t_effects) { effects = t_effects; }
-    
-    int getDamage() { return effects.damage; }
+    void setMoveEffect(movement t_effect) { effects.movementEffect = t_effect; }
+    void setHitEffect(onHit t_effect) { effects.onHitEffect= t_effect; }
+
+    int getSpeed() { return effects.shotSpeed; }
+    void addSpeed(int t_amount) { effects.shotSpeed += t_amount; }
+
+    void setPos(Vector2 t_pos) { position = t_pos; }
+
+    void reset();
+    float getScale() { return scale; }
+    void scaleDown() { scale -= 0.08f; }
+
+    void setActive(bool t_newState) { active = t_newState; }
+
+    int strokes;
     
 private:
     void input();
@@ -32,14 +44,20 @@ private:
     void onCollision(const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result);
 
     Vector2 spawnPos;
-    Vector2 velocity;
+    Vector2 baseVelocity;
+    Vector2 effectVelocity;
+    Vector2 combinedVelocity;
+
     Vector2 direction;
+    float time = 0.0f;
 
     Effect effects;
     Texture2D& texture;
     float radius;
 
     bool moving = false;
+
+    float scale = 1;
 };
 
 #include "../include/Obstacle.h"

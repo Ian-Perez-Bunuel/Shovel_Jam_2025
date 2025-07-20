@@ -3,6 +3,8 @@
 #include <vector>
 #include "../include/Obstacle.h"
 
+// THIS WHOLE SYSTEM WOULD PROBABLY BE A LOT BETTER WITH MAPS OR STRUCTS BUT TIMES A BITCH
+
 class Projectile;
 
 enum class CollisionSide 
@@ -34,20 +36,33 @@ struct Effect
     int shotSpeed = 0;          // Speed of ball
 };
 
+static const int INCREMENT_AMOUNT = 10;
 
 class CollisionEffects
 {
 public:
     static CollisionInfo getCircleRecCollisionSide(Vector2 circlePos, float radius, Rectangle rec);
     // Collision Types
+    static const int DEFAULT_COST;
     static void defaultHit(Projectile* t_projectile, const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result);
+    static const int DESTROY_COST;
+    static void destroyHit(Projectile* t_projectile, const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result);
+    static const int NO_COLLISION_COST;
+    static void noHit(Projectile* t_projectile, const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result);
 };
 
 class MovementEffects
 {
 public:
     // Movement Types
+    static const int DEFAULT_COST;
     static void defaultMovement(Projectile* t_projectile);
+    static const int SIN_COST;
+    static void sinMovement(Projectile* t_projectile);
+    static const int RANDOM_COST;
+    static void randomMovement(Projectile* t_projectile);
+    static const int MAX_POWER_COST;
+    static void maxMovement(Projectile* t_projectile);
 };
 
 #include "../include/Projectile.h"

@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "../include/Projectile.h"
+#include "../include/UI.h"
 #include "../include/Renderer.h"
+#include "../include/Level.h"
 
 class Game
 {
@@ -23,6 +25,7 @@ private:
 
     void initRenderer();
     std::unique_ptr<Renderer> renderer;
+    std::unique_ptr<UI> ui;
 
     Texture2D ballTexture;
     std::shared_ptr<Projectile> ball;
@@ -30,7 +33,10 @@ private:
     static const int MAX_OBSTACLES = 100;
     const int TILE_SIZE = 100;
     Texture2D boxTexture;
-    std::vector<std::shared_ptr<Obstacle>> obstacles;
+    std::vector<std::shared_ptr<Obstacle>> walls;
+
+    int currentLevel;
+    std::vector<std::shared_ptr<Level>> levels;
 
     Vector2 startPos;
 };

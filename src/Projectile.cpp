@@ -1,5 +1,6 @@
 #include "../include/Projectile.h"
 #include "../include/Globals.h"
+#include "../include/UI.h"
 
 Projectile::Projectile(Texture2D& t_texture, Vector2 t_pos)
     : texture(t_texture)
@@ -11,13 +12,14 @@ Projectile::Projectile(Texture2D& t_texture, Vector2 t_pos)
     sprite = std::make_shared<Drawable>(position, active);
     sprite->setTexture(texture);
     active = true;
+    scale = 1;
 }
 
 void Projectile::shoot(Effect &t_effects, Vector2 t_dir)
 {
     effects = t_effects; 
     spawnPos = position;
-    velocity = Vector2Scale(Vector2Normalize(t_dir), effects.shotSpeed);
+    baseVelocity = Vector2Scale(Vector2Normalize(t_dir), effects.shotSpeed);
 
     active = true;
 }
@@ -26,30 +28,25 @@ void Projectile::input()
 {
     if (!moving)
     {
-        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && !UI::mouseInUI())
         {
-            printf("\nrelease\n\n");
             release();
-        }
-
-        if (IsKeyReleased(KEY_W))
-        {
-            effects.shotSpeed += 10;
-        }
-        else if (IsKeyReleased(KEY_S))
-        {
-            effects.shotSpeed -= 10;
         }
     }
 }
 
 void Projectile::release()
 {
-    moving = true;
-    // Get Direction
-    direction = Vector2Subtract(position, GetMousePosition());
-    direction = Vector2Scale(Vector2Normalize(direction), effects.shotSpeed);
-    velocity = direction;
+    if (effects.shotSpeed > 0)
+    {
+        strokes++;
+        moving = true;
+        // Get Direction
+        direction = Vector2Subtract(GetMousePosition(), position);
+        direction = Vector2Scale(Vector2Normalize(direction), effects.shotSpeed*20);
+        baseVelocity = direction;
+        time = 0.0f;
+    }
 }
 
 void Projectile::update(const std::vector<std::shared_ptr<Obstacle>>& obstacles)
@@ -58,47 +55,52 @@ void Projectile::update(const std::vector<std::shared_ptr<Obstacle>>& obstacles)
 
     if (!moving) return;
 
-    // Determine how many sub‑steps we'll need.
-    // Here we cap each mini‑step to at most half the radius.
-    float moveDist = Vector2Length(velocity);
-    int steps = (int)ceil(moveDist / (radius * 0.5f));
-    if (steps < 1) steps = 1;
+    time += GetFrameTime();
 
-    // 2) Compute the per‑step velocity
-    Vector2 stepVel = Vector2Scale(velocity, 1.0f/steps);
+    // Give the ball an effect
+    effects.movementEffect(this);
 
-    // March along in tiny increments, testing collisions at each
+    // combine the direction velocity with the effect's velocity
+    Vector2 combinedVel = Vector2Add(baseVelocity, effectVelocity);
+
+    // —————————————————————————
+    // 5) collision‑safe sub‑stepping
+    // total distance this frame:
+    float moveDist = Vector2Length(combinedVel) * GetFrameTime();
+    int   steps    = (int)ceil(moveDist / (radius * 0.5f));
+    steps = (steps < 1) ? 1 : steps;
+
+    // per‑step displacement = combinedVel * (dt/steps)
+    Vector2 stepDisp = Vector2Scale(combinedVel, GetFrameTime()/(float)steps);
+
     for (int i = 0; i < steps; i++)
     {
-        // Continue
-        position = Vector2Add(position, stepVel);
+        position = Vector2Add(position, stepDisp);
 
-        // Test against every obstacle
         for (auto& ob : obstacles)
         {
-            CollisionInfo info = CollisionEffects::getCircleRecCollisionSide(position, radius, ob->getRect());
-
-            if (info.side != CollisionSide::SIDE_NONE)
+            if (ob->isActive())
             {
-                // Push the ball out so it's flush against the box
-                Vector2 diff   = Vector2Subtract(position, info.contactPoint);
-                Vector2 normal = Vector2Normalize(diff);
-                position = Vector2Add(info.contactPoint, Vector2Scale(normal, radius));
-
-                // Respond
-                onCollision(ob, info);
-
-                goto doneStepping;
+                CollisionInfo info =
+                CollisionEffects::getCircleRecCollisionSide(position, radius, ob->getRect());
+                if (info.side != CollisionSide::SIDE_NONE)
+                {
+                    // push‑out & bounce
+                    Vector2 diff   = Vector2Subtract(position, info.contactPoint);
+                    Vector2 normal = Vector2Normalize(diff);
+                    position = Vector2Add(info.contactPoint, Vector2Scale(normal, radius));
+                    onCollision(ob, info);
+                    goto doneStepping;
+                }
             }
         }
     }
-
 doneStepping:
-    // Apply friction once per frame
-    velocity = Vector2Scale(velocity, FRICTION);
+    // Apply friction
+    baseVelocity = Vector2Scale(baseVelocity, FRICTION);
 
-    // If you've slowed to almost zero, stop
-    if (Vector2Length(velocity) <= 0.1f)
+    // 7) stop if you’ve slowed to a crawl
+    if (Vector2Length(baseVelocity) * GetFrameTime() <= 0.1f)
         moving = false;
 }
 
@@ -112,9 +114,7 @@ void Projectile::draw()
 {
     if (active)
     {
-        DrawCircleV(position, radius, color);
-
-        // Draw drag line
+        // Draw aim line
         if (!moving)
         {
             Vector2 dir = Vector2Subtract(GetMousePosition(), position);
@@ -128,4 +128,21 @@ void Projectile::draw()
             DrawLineEx(position, end, 5, color);
         }
     }
+    else
+    {
+        DrawCircleV(position, radius * scale, color);
+    }
+}
+
+void Projectile::reset()
+{
+    strokes = 0; 
+    scale = 1; 
+    active = true; 
+    baseVelocity = {0, 0}; 
+    effectVelocity = {0, 0};
+    effects.shotSpeed = 0;
+
+    effects.movementEffect = MovementEffects::defaultMovement;
+    effects.onHitEffect = CollisionEffects::defaultHit;
 }
