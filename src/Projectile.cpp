@@ -13,15 +13,12 @@ Projectile::Projectile(Texture2D& t_texture, Vector2 t_pos)
     sprite->setTexture(texture);
     active = true;
     scale = 1;
-}
 
-void Projectile::shoot(Effect &t_effects, Vector2 t_dir)
-{
-    effects = t_effects; 
-    spawnPos = position;
-    baseVelocity = Vector2Scale(Vector2Normalize(t_dir), effects.shotSpeed);
+    trail.addColor(lightTrail);
+    trail.addColor(medTrail);
+    trail.addColor(darkTrail);
 
-    active = true;
+    collisionSound = LoadSound(SOUND_PATH"/Collide.wav");
 }
 
 void Projectile::input()
@@ -40,18 +37,41 @@ void Projectile::release()
     if (effects.shotSpeed > 0)
     {
         strokes++;
+
         moving = true;
         // Get Direction
         direction = Vector2Subtract(GetMousePosition(), position);
         direction = Vector2Scale(Vector2Normalize(direction), effects.shotSpeed*20);
         baseVelocity = direction;
         time = 0.0f;
+
+        // Set new max credits and reset effects
+        effects.shotSpeed = 0;
+        UI::setNewMaxCredits();
+    }
+}
+
+void Projectile::trailTimer()
+{
+    if (trailCounter < TIME_BETWEEN_PARTICLES)
+    {
+        trailCounter += GetFrameTime();
+    }
+    else
+    {
+        trailCounter = 0;
+
+        float angle = atan2f(combinedVelocity.y, combinedVelocity.x);
+        oppositeDirection = RAD2DEG * (atan2f(combinedVelocity.y, combinedVelocity.x)) + 270.0f;
+        trail.setValues(position, 15, oppositeDirection);
+        trail.spawn(1);
     }
 }
 
 void Projectile::update(const std::vector<std::shared_ptr<Obstacle>>& obstacles)
 {
     input();
+    trail.update();
 
     if (!moving) return;
 
@@ -60,18 +80,20 @@ void Projectile::update(const std::vector<std::shared_ptr<Obstacle>>& obstacles)
     // Give the ball an effect
     effects.movementEffect(this);
 
-    // combine the direction velocity with the effect's velocity
-    Vector2 combinedVel = Vector2Add(baseVelocity, effectVelocity);
+    // Combine the direction velocity with the effect's velocity
+    combinedVelocity = Vector2Add(baseVelocity, effectVelocity);
+    trailTimer();
 
-    // —————————————————————————
-    // 5) collision‑safe sub‑stepping
-    // total distance this frame:
-    float moveDist = Vector2Length(combinedVel) * GetFrameTime();
-    int   steps    = (int)ceil(moveDist / (radius * 0.5f));
+    // Collision‑safe sub‑stepping
+    // Total distance this frame:
+    float moveDist = Vector2Length(combinedVelocity) * GetFrameTime();
+    int steps = (int)ceil(moveDist / (radius * 0.5f));
     steps = (steps < 1) ? 1 : steps;
 
-    // per‑step displacement = combinedVel * (dt/steps)
-    Vector2 stepDisp = Vector2Scale(combinedVel, GetFrameTime()/(float)steps);
+    // Per‑step displacement = combinedVelocity * (dt/steps)
+    Vector2 stepDisp = Vector2Scale(combinedVelocity, GetFrameTime()/(float)steps);
+
+    bool collided = false;
 
     for (int i = 0; i < steps; i++)
     {
@@ -81,21 +103,36 @@ void Projectile::update(const std::vector<std::shared_ptr<Obstacle>>& obstacles)
         {
             if (ob->isActive())
             {
-                CollisionInfo info =
-                CollisionEffects::getCircleRecCollisionSide(position, radius, ob->getRect());
+                CollisionInfo info = CollisionEffects::getCircleRecCollisionSide(position, radius, ob->getRect());
                 if (info.side != CollisionSide::SIDE_NONE)
                 {
-                    // push‑out & bounce
                     Vector2 diff   = Vector2Subtract(position, info.contactPoint);
                     Vector2 normal = Vector2Normalize(diff);
                     position = Vector2Add(info.contactPoint, Vector2Scale(normal, radius));
                     onCollision(ob, info);
-                    goto doneStepping;
+                    collided = true;
+                    break;
                 }
             }
         }
+
+        if (collided) break;
     }
-doneStepping:
+
+    doneStepping(); // Only called once after stepping
+
+    // Reset effects when done moving
+    if (!moving) 
+    {
+        effects.movementEffect = MovementEffects::defaultMovement;
+        effects.onHitEffect = CollisionEffects::defaultHit;
+        // Set as fail
+        UI::checkForFail();
+    }
+}
+
+void Projectile::doneStepping()
+{
     // Apply friction
     baseVelocity = Vector2Scale(baseVelocity, FRICTION);
 
@@ -104,9 +141,12 @@ doneStepping:
         moving = false;
 }
 
-
 void Projectile::onCollision(const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result)
 {
+    float randChange = ((rand() % 4) - 2) / 10.0f;
+    SetSoundVolume(collisionSound, MASTER_VOLUME);
+    SetSoundPitch(collisionSound, 1 + randChange);
+    PlaySound(collisionSound);
     effects.onHitEffect(this, t_box, t_result);
 }
 
@@ -132,6 +172,8 @@ void Projectile::draw()
     {
         DrawCircleV(position, radius * scale, color);
     }
+
+    trail.draw();
 }
 
 void Projectile::reset()

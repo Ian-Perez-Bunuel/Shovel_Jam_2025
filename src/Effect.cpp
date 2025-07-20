@@ -5,8 +5,10 @@
 // Costs of effects
 // Hit
 const int CollisionEffects::DEFAULT_COST = 0;
+const int CollisionEffects::STICKY_COST = 15;
 const int CollisionEffects::DESTROY_COST = 20;
 const int CollisionEffects::NO_COLLISION_COST = 70;
+
 // Move
 const int MovementEffects::DEFAULT_COST = 0;
 const int MovementEffects::SIN_COST = 10;
@@ -109,6 +111,12 @@ void CollisionEffects::destroyHit(Projectile *t_projectile, const std::shared_pt
 
 void CollisionEffects::noHit(Projectile *t_projectile, const std::shared_ptr<Obstacle> &t_box, CollisionInfo t_result)
 {
+}
+
+void CollisionEffects::stickyHit(Projectile *t_projectile, const std::shared_ptr<Obstacle> &t_box, CollisionInfo t_result)
+{
+    t_projectile->baseVelocity = {0, 0};
+    t_projectile->effectVelocity = {0, 0};
 }
 
 // ------------------- MOVEMENT ---------------------

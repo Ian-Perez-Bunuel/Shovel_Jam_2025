@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include <vector>
 #include "../include/Obstacle.h"
+#include "../include/Globals.h"
 
 // THIS WHOLE SYSTEM WOULD PROBABLY BE A LOT BETTER WITH MAPS OR STRUCTS BUT TIMES A BITCH
 
@@ -49,6 +50,8 @@ public:
     static void destroyHit(Projectile* t_projectile, const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result);
     static const int NO_COLLISION_COST;
     static void noHit(Projectile* t_projectile, const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result);
+    static const int STICKY_COST;
+    static void stickyHit(Projectile* t_projectile, const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result);
 };
 
 class MovementEffects

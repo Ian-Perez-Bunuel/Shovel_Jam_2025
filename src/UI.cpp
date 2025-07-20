@@ -2,6 +2,20 @@
 #include "../include/Globals.h"
 #include "../include/Effect.h"
 
+int UI::currentCreditMax;
+int UI::credit;
+
+// Movement toggles
+Toggle UI::defaultMovement;
+Toggle UI::sinMovement;
+Toggle UI::randomMovement;
+Toggle UI::maxPower;
+
+// Hit toggles
+Toggle UI::defaultHit;
+Toggle UI::destroyHit;
+Toggle UI::noHit;
+Toggle UI::stickyHit;
 
 UI::UI(std::shared_ptr<Projectile>& t_ball)
     : ball(t_ball)
@@ -14,15 +28,26 @@ UI::UI(std::shared_ptr<Projectile>& t_ball)
     maxPower.init({400, 175}, "MAX POWER - " + std::to_string(MovementEffects::MAX_POWER_COST));
 
     defaultHit.init({700, 85}, "Normal - FREE");
-    destroyHit.init({700, 115}, "Destroyer - " + std::to_string(CollisionEffects::DESTROY_COST));
-    noHit.init({700, 145}, "Slide - " + std::to_string(CollisionEffects::NO_COLLISION_COST));
+    stickyHit.init({700, 115}, "Sticky - " + std::to_string(CollisionEffects::STICKY_COST));
+    destroyHit.init({700, 145}, "Destroyer - " + std::to_string(CollisionEffects::DESTROY_COST));
+    noHit.init({700, 175}, "Slide - " + std::to_string(CollisionEffects::NO_COLLISION_COST));
 
     credit = MAX_CREDIT;
+    currentCreditMax = MAX_CREDIT;
+
+    ballParticles.addColor(particleColor);
+
+    defaultHit.turnOn();
+    defaultMovement.turnOn();
+
+    powerUpSound = LoadSound(SOUND_PATH"/powerUp.wav");
+    powerDownSound = LoadSound(SOUND_PATH"/powerDown.wav");
 }
 
 void UI::draw()
 {
-    DrawRectangleV({10, 10}, {SCREEN_WIDTH - 20, SCREEN_HEIGHT * 0.2f}, PURPLE);
+    //DrawRectangleV({10, 10}, {SCREEN_WIDTH - 20, SCREEN_HEIGHT * 0.2f}, PURPLE);
+    DrawTextureEx(background, {10, 10}, 0, PIXEL_SCALE, WHITE);
 
     std::string creditText = ("Credit: " + std::to_string(credit));
     DrawText(creditText.c_str(), 25, 25, 50, YELLOW);
@@ -42,17 +67,20 @@ void UI::draw()
 
     DrawText("Collision", 700, 25, 40, BLACK);
     defaultHit.draw();
+    stickyHit.draw();
     destroyHit.draw();
     noHit.draw();
+
+    ballParticles.draw();
 }
 
 void UI::update()
 {
     input();
 
-    if (credit > MAX_CREDIT)
+    if (credit > currentCreditMax)
     {
-        credit = MAX_CREDIT;
+        credit = currentCreditMax;
     }
 
     if (mouseInUI())
@@ -63,6 +91,9 @@ void UI::update()
             updateHitToggles();
         }
     }
+
+    // Particles
+    ballParticles.update();
 }
 
 bool UI::mouseInUI()
@@ -77,7 +108,9 @@ bool UI::mouseInUI()
 
 void UI::updateMovementToggles()
 {
-    if (defaultMovement.mouseCheck(credit, MovementEffects::DEFAULT_COST))
+    bool anyTurnedOff = false;
+
+    if (defaultMovement.mouseCheck(credit, MovementEffects::DEFAULT_COST, anyTurnedOff))
     {
         // Set effect
         ball->setMoveEffect(MovementEffects::defaultMovement);
@@ -85,75 +118,156 @@ void UI::updateMovementToggles()
         sinMovement.turnOff(credit, MovementEffects::SIN_COST);
         randomMovement.turnOff(credit, MovementEffects::RANDOM_COST);
         maxPower.turnOff(credit, MovementEffects::MAX_POWER_COST);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.implode(5, ball->getRadius() * 2);
     }
     // SIN MOVEMENT
-    else if (sinMovement.mouseCheck(credit, MovementEffects::SIN_COST))
+    else if (sinMovement.mouseCheck(credit, MovementEffects::SIN_COST, anyTurnedOff))
     {
         ball->setMoveEffect(MovementEffects::sinMovement);
         defaultMovement.turnOff(credit, MovementEffects::DEFAULT_COST);
         randomMovement.turnOff(credit, MovementEffects::RANDOM_COST);
         maxPower.turnOff(credit, MovementEffects::MAX_POWER_COST);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.implode(5, ball->getRadius() * 2);
     }
     // Random movement
-    else if (randomMovement.mouseCheck(credit, MovementEffects::RANDOM_COST))
+    else if (randomMovement.mouseCheck(credit, MovementEffects::RANDOM_COST, anyTurnedOff))
     {
         ball->setMoveEffect(MovementEffects::randomMovement);
         defaultMovement.turnOff(credit, MovementEffects::DEFAULT_COST);
         sinMovement.turnOff(credit, MovementEffects::SIN_COST);
         maxPower.turnOff(credit, MovementEffects::MAX_POWER_COST);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.implode(5, ball->getRadius() * 2);
     }
     // Max power
-    else if (maxPower.mouseCheck(credit, MovementEffects::MAX_POWER_COST))
+    else if (maxPower.mouseCheck(credit, MovementEffects::MAX_POWER_COST, anyTurnedOff))
     {
         ball->setMoveEffect(MovementEffects::maxMovement);
         defaultMovement.turnOff(credit, MovementEffects::DEFAULT_COST);
         sinMovement.turnOff(credit, MovementEffects::SIN_COST);
         randomMovement.turnOff(credit, MovementEffects::RANDOM_COST);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.implode(5, ball->getRadius() * 2);
     }
 
+    if (anyTurnedOff)
+    {   
+        ball->setMoveEffect(MovementEffects::defaultMovement);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.spawn(5);
+    }
 }
 
 void UI::updateHitToggles()
 {
-    if (defaultHit.mouseCheck(credit, CollisionEffects::DEFAULT_COST))
+    bool anyTurnedOff = false;
+
+    if (defaultHit.mouseCheck(credit, CollisionEffects::DEFAULT_COST, anyTurnedOff))
     {
         // Set effect
         ball->setHitEffect(CollisionEffects::defaultHit);
         // turn off the others
         destroyHit.turnOff(credit, CollisionEffects::DESTROY_COST);
+        stickyHit.turnOff(credit, CollisionEffects::STICKY_COST);
         noHit.turnOff(credit, CollisionEffects::NO_COLLISION_COST);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.implode(5, ball->getRadius() * 2);
     }
-    else if (destroyHit.mouseCheck(credit, CollisionEffects::DESTROY_COST))
+    else if (destroyHit.mouseCheck(credit, CollisionEffects::DESTROY_COST, anyTurnedOff))
     {
         ball->setHitEffect(CollisionEffects::destroyHit);
         // turn off the others
         defaultHit.turnOff(credit, CollisionEffects::DEFAULT_COST);
         noHit.turnOff(credit, CollisionEffects::NO_COLLISION_COST);
+        stickyHit.turnOff(credit, CollisionEffects::STICKY_COST);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.implode(5, ball->getRadius() * 2);
     }
-    else if (noHit.mouseCheck(credit, CollisionEffects::NO_COLLISION_COST))
+    else if (noHit.mouseCheck(credit, CollisionEffects::NO_COLLISION_COST, anyTurnedOff))
     {
         ball->setHitEffect(CollisionEffects::noHit);
         // turn off the others
         defaultHit.turnOff(credit, CollisionEffects::DEFAULT_COST);
         destroyHit.turnOff(credit, CollisionEffects::DESTROY_COST);
+        stickyHit.turnOff(credit, CollisionEffects::STICKY_COST);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.implode(5, ball->getRadius() * 2);
+    }
+    else if (stickyHit.mouseCheck(credit, CollisionEffects::STICKY_COST, anyTurnedOff))
+    {
+        ball->setHitEffect(CollisionEffects::stickyHit);
+        // turn off the others
+        defaultHit.turnOff(credit, CollisionEffects::DEFAULT_COST);
+        destroyHit.turnOff(credit, CollisionEffects::DESTROY_COST);
+        noHit.turnOff(credit, CollisionEffects::NO_COLLISION_COST);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.implode(5, ball->getRadius() * 2);
+    }
+
+    if (anyTurnedOff)
+    {   
+        ball->setHitEffect(CollisionEffects::defaultHit);
+
+        // Particles
+        ballParticles.setValues(ball->getPos(), 360, 0);
+        ballParticles.spawn(5);
     }
 }
 void UI::input()
 {
-    if (IsKeyReleased(KEY_W))
+    if (!ball->isMoving())
     {
-        if (credit >= INCREMENT_AMOUNT)
+        if (IsKeyReleased(KEY_W))
         {
-           ball->addSpeed(INCREMENT_AMOUNT);
-            credit -= COST_PER_POWER;
+            if (credit >= COST_PER_POWER)
+            {
+                ball->addSpeed(INCREMENT_AMOUNT);
+                credit -= COST_PER_POWER;
+
+                ballParticles.setValues(ball->getPos(), 360, 0);
+                ballParticles.implode(5, ball->getRadius() * 2);
+
+                float randChange = ((rand() % 4) - 2) / 10.0f;
+                SetSoundVolume(powerUpSound, MASTER_VOLUME);
+                SetSoundPitch(powerUpSound, 1 + randChange);
+                PlaySound(powerUpSound);
+            }
         }
-    }
-    else if (IsKeyReleased(KEY_S))
-    {
-        if (ball->getSpeed() >= INCREMENT_AMOUNT)
+        else if (IsKeyReleased(KEY_S))
         {
-            ball->addSpeed(-INCREMENT_AMOUNT);
-            credit += COST_PER_POWER;
+            if (ball->getSpeed() >= COST_PER_POWER)
+            {
+                ball->addSpeed(-INCREMENT_AMOUNT);
+                credit += COST_PER_POWER;
+
+                ballParticles.setValues(ball->getPos(), 360, 0);
+                ballParticles.implode(5, ball->getRadius() * 1.5f);
+
+                float randChange = ((rand() % 4) - 2) / 10.0f;
+                SetSoundVolume(powerDownSound, MASTER_VOLUME);
+                SetSoundPitch(powerDownSound, 1 + randChange);
+                PlaySound(powerDownSound);
+            }
         }
     }
 }
@@ -165,11 +279,36 @@ void UI::reset()
     defaultHit.turnOff(credit, CollisionEffects::DEFAULT_COST);
     destroyHit.turnOff(credit, CollisionEffects::DESTROY_COST);
     noHit.turnOff(credit, CollisionEffects::NO_COLLISION_COST);
+    stickyHit.turnOff(credit, CollisionEffects::STICKY_COST);
 
     defaultMovement.turnOff(credit, MovementEffects::DEFAULT_COST);
     sinMovement.turnOff(credit, MovementEffects::SIN_COST);
     randomMovement.turnOff(credit, MovementEffects::RANDOM_COST);
     maxPower.turnOff(credit, MovementEffects::MAX_POWER_COST);
     
+    currentCreditMax = MAX_CREDIT;
     credit = MAX_CREDIT;
+}
+
+void UI::setNewMaxCredits()
+{
+    currentCreditMax = credit;
+
+    defaultHit.turnOn();
+    destroyHit.turnOff(credit, CollisionEffects::DESTROY_COST);
+    noHit.turnOff(credit, CollisionEffects::NO_COLLISION_COST);
+    stickyHit.turnOff(credit, CollisionEffects::STICKY_COST);
+
+    defaultMovement.turnOn();
+    sinMovement.turnOff(credit, MovementEffects::SIN_COST);
+    randomMovement.turnOff(credit, MovementEffects::RANDOM_COST);
+    maxPower.turnOff(credit, MovementEffects::MAX_POWER_COST);
+}
+
+void UI::checkForFail()
+{
+    if (credit <= 0)
+    {
+        credit = -1;
+    }
 }

@@ -10,7 +10,7 @@ class Toggle
 public:
     void init(Vector2 t_pos, std::string t_text);
     void draw();
-    bool mouseCheck(int& t_credit, int t_amount);
+    bool mouseCheck(int& t_credit, int t_amount, bool& t_turnedOff);
 
     bool isOn() { return toggled; }
     void turnOff(int& t_credit, int t_amount = 0);
@@ -26,5 +26,10 @@ private:
     float width;
     float height = 25;
 
+    Texture2D onTexture;
+    Texture2D offTexture;
+
     Color color;
+
+    Sound addEffectSound;
 };

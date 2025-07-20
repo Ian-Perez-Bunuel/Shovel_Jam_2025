@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../include/GameObject.h"
+#include "../include/ParticleSpawner.h"
 
 class Obstacle : public GameObject
 {
@@ -25,4 +26,8 @@ private:
     float height;
 
     bool grabbed = false;
+
+    ParticleSpawner destructionParticles;
+
+    Sound destoySound;
 };

@@ -13,6 +13,8 @@ void Level::init(std::shared_ptr<Projectile>& t_ball)
 {
     boxTexture = LoadTexture(SPRITE_PATH"/block.png");
     loadLevel(t_ball);
+    t_ball->strokes = 0;
+    levelCompleted = false;
 }
 
 void Level::draw()
@@ -26,8 +28,14 @@ void Level::draw()
     }
 }
 
+// Returns true on level completed
 bool Level::update(std::shared_ptr<Projectile>& t_ball)
 {
+    for (std::shared_ptr<Obstacle>& obj : obstacles)
+    {
+        obj->update();
+    }
+
     if (goal.checkForBall(t_ball))
     {
         levelCompleted = true;
@@ -66,7 +74,7 @@ void Level::levelEditting()
     // Spawn Block
     if (IsMouseButtonReleased(MOUSE_BUTTON_MIDDLE))
     {
-        obstacles.push_back(std::make_shared<Obstacle>(GetMousePosition(), YELLOW, boxTexture));
+        obstacles.push_back(std::make_shared<Obstacle>(GetMousePosition(), YELLOW, boxTexture, true, 64, 64));
     }
 
     if (IsKeyReleased(KEY_SPACE))

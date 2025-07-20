@@ -5,6 +5,7 @@
 
 #include "../include/Effect.h"
 #include "../include/GameObject.h"
+#include "../include/ParticleSpawner.h"
 
 class Obstacle;
 
@@ -15,8 +16,7 @@ class Projectile : public GameObject
 public:
     Projectile(Texture2D& t_texture, Vector2 t_pos);
     float getRadius() const { return radius; }
-
-    void shoot(Effect& t_effects, Vector2 t_dir);
+    bool isMoving() { return moving; }
 
     void update(const std::vector<std::shared_ptr<Obstacle>>& obstacles);
     void draw() override;
@@ -42,6 +42,7 @@ private:
     void release();
 
     void onCollision(const std::shared_ptr<Obstacle>& t_box, CollisionInfo t_result);
+    void doneStepping();
 
     Vector2 spawnPos;
     Vector2 baseVelocity;
@@ -58,6 +59,17 @@ private:
     bool moving = false;
 
     float scale = 1;
+
+    void trailTimer();
+    const float TIME_BETWEEN_PARTICLES = 0.02f;
+    float trailCounter = 0.0f;
+    const Color lightTrail = {102, 140, 157, 255};
+    const Color medTrail = {76, 72, 124, 255};
+    const Color darkTrail = {65, 49, 100, 255};
+    ParticleSpawner trail;
+    float oppositeDirection;
+
+    Sound collisionSound;
 };
 
 #include "../include/Obstacle.h"

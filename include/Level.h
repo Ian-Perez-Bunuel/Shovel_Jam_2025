@@ -19,11 +19,12 @@ public:
     bool update(std::shared_ptr<Projectile>& t_ball);
 
     std::vector<std::shared_ptr<Obstacle>> getObjects() { return obstacles; }
+    void saveLevel();
+    void resetLevel(std::shared_ptr<Projectile>& t_ball) { levelCompleted = false; loadLevel(t_ball); }
 private:
     bool levelCompleted = false;
     int level;
 
-    void saveLevel();
     void loadLevel(std::shared_ptr<Projectile>& t_ball);
 
     Texture2D boxTexture;

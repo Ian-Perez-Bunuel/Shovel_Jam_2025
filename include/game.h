@@ -31,13 +31,15 @@ private:
     std::shared_ptr<Projectile> ball;
 
     static const int MAX_OBSTACLES = 100;
-    const int TILE_SIZE = 100;
+    const int TILE_SIZE = 96;
     Texture2D boxTexture;
     std::vector<std::shared_ptr<Obstacle>> walls;
 
+    void completeLevel();
     int currentLevel;
     std::vector<std::shared_ptr<Level>> levels;
 
+    void checkForLose();
     Vector2 startPos;
 };
 

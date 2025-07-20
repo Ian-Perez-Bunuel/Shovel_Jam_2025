@@ -5,6 +5,7 @@
 #include <vector>
 #include "../include/Toggle.h"
 #include "../include/Projectile.h"
+#include "../include/ParticleSpawner.h"
 
 class UI
 {
@@ -17,6 +18,9 @@ public:
 
     static bool mouseInUI();
 
+    int getCredits() { return credit; }
+    static void setNewMaxCredits();
+    static void checkForFail();
 private:
     void input();
     Texture2D background;
@@ -25,20 +29,29 @@ private:
     void updateHitToggles();
 
     // Movement toggles
-    Toggle defaultMovement;
-    Toggle sinMovement;
-    Toggle randomMovement;
-    Toggle maxPower;
+    static Toggle defaultMovement;
+    static Toggle sinMovement;
+    static Toggle randomMovement;
+    static Toggle maxPower;
 
     // Hit toggles
-    Toggle defaultHit;
-    Toggle destroyHit;
-    Toggle noHit;
+    static Toggle defaultHit;
+    static Toggle destroyHit;
+    static Toggle noHit;
+    static Toggle stickyHit;
 
-    const int COST_PER_POWER = 10;
+    const int COST_PER_POWER = 5;
 
     const int MAX_CREDIT = 100;
-    int credit;
+    static int currentCreditMax;
+    static int credit;
 
     std::shared_ptr<Projectile>& ball;
+
+    Color particleColor = {226, 255, 230, 255};
+    ParticleSpawner ballParticles;
+
+    Sound powerUpSound;
+    Sound powerDownSound;
+    Sound addEffectSound;
 };

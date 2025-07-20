@@ -25,5 +25,5 @@ protected:
 
     Vector2 position;
 
-    Color color;
+    Color color = GRAY;
 };
